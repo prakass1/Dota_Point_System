@@ -7,6 +7,7 @@ base_url = "https://www.dotabuff.com/"
 extraction_data = {}
 matches_list = []
 
+# Extracting the match data
 def extract_match_data(match_id):
     try:
         header = {
