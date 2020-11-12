@@ -31,6 +31,10 @@ def main_process():
             if player_data:
                 level = player_data.find("span", {"class":"overlay-text"}).get_text()
                 temp_player_dict["max_lvl"] = level
+                # Find the played hero
+                player_hero_container = player_data.find("div", {"class":"image-container-hero"})
+                hero = player_hero_container.find("a").get("href").split("/")[2]
+                temp_player_dict["played_hero"] = hero
                 # Group-1: Kills, Deaths, Assist,Total Gold Earned
                 stats1 = player_data.find_all("td", {"class":"r-group-1"})
                 stats1_data = [stat.get_text() for stat in stats1]
@@ -62,10 +66,10 @@ def main_process():
                 print("Not a known player")
         match_dict[match] = players_list
         # Not to get banned
-        time.sleep(120)
+        time.sleep(10)
     extraction_data["matches"] = match_dict
     return extraction_data
 
-
-if __name__ == "main":
-    print(main_process())
+# Main execution
+#if __name__ == "__main__":
+#    print(main_process())
