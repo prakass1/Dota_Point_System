@@ -18,7 +18,7 @@ def extract_match_data(match_id):
         print(traceback.print_exc())
 
 
-def main():
+def main_process():
     match_dict = {}
     for match in properties.match_ids:
         players_list = []
@@ -68,4 +68,4 @@ def main():
 
 
 if __name__ == "main":
-    print(main())
+    print(main_process())

@@ -1,4 +1,7 @@
 import buff_extraction
+import pickle
+# Get the data from dotabuff first
+extraction_data = buff_extraction.main_process()
 
 #points distribution per player per match
 #calculate kill points
@@ -80,9 +83,8 @@ def calc_healp(heal):
     return healp
 
 
-for match, player in buff_extraction.extraction_data['matches'].items():
+for match, player in extraction_data['matches'].items():
     for stat in player:
-        
         #kill
         k = int(stat['kills'])
         kp = calc_killp(k)
@@ -104,8 +106,25 @@ for match, player in buff_extraction.extraction_data['matches'].items():
         gpmp = calc_gpmp(gpm)
 
         #building damage (values are with string 'k', so hast to be updated)
-        #bld = int(float(stat['bld']))
-        #bldp = calc_bldp(bld)
+        if "k" in stat["bld"]:
+            bld = float(stat["bld"].split("k")[0]) * 1000
+            bld = calc_bldp(bld)
+        else:
+            bld = float(stat["bld"])
+            bld = calc_bldp(bld)
+
+        #XPM (values are with string 'k', so hast to be updated)
+        if "k" in stat["xpm"]:
+            xpm = float(stat["xpm"].split("k")[0]) * 1000
+        else:
+            xpm = float(stat["xpm"])
+
+        #DMG (values are with string 'k', so hast to be updated)
+        if "k" in stat["dmg"]:
+            dmg = float(stat["dmg"].split("k")[0]) * 1000
+        else:
+            dmg = float(stat["dmg"])
+
 
         #heal points (some values in heal are '-')
         if stat['heal'] == "-":
@@ -114,6 +133,19 @@ for match, player in buff_extraction.extraction_data['matches'].items():
             heal = int(stat['heal'])
             healp = calc_healp(heal)
         
-        Total_Points = kp + dp + ap + lhp + gpmp + bldp + healp
+        Total_Points = kp + dp + ap + lhp + gpmp + healp + bld \
+                       #+ dmg + xpm
 
         print("player id is " + stat['player_id'] + " and Total Points =" + str(Total_Points))
+
+# # To add is a final data store as follows:
+# total_points = {
+#     "p1": {
+#         "score": val,
+#         "games_played": val
+#     },
+#     "p2": {
+#         "score": val,
+#         "games_played": val
+#     }
+# }
