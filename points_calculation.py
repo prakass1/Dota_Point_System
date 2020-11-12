@@ -147,8 +147,8 @@ for match, player in extraction_data['matches'].items():
         Total_Points = kp + dp + ap + lhp + gpmp + healp + bld + lvlp \
                        #+ dmg + xpm
 
-        print("player id is " + stat['player_id'] + " and Total Points =" + str(Total_Points))
-
+        print("For Match id " + match + " player id is " + stat['player_id'] + " and Total Points = " + str(Total_Points))
+        
 # # To add is a final data store as follows:
 # total_points = {
 #     "p1": {
