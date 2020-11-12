@@ -32,6 +32,18 @@ def calc_lhp(lh):
         lhp = 10
     return lhp
 
+#calculate deny points
+def calc_dnp(dn):
+    if 1 < dn < 5:
+        dnp = 2
+    elif 5 < dn < 10:
+        dnp = 5
+    elif 10 < dn < 15:
+        dnp = 7
+    elif dn > 15:
+        dnp = 10
+    return dnp
+
 #calculate gold per minute points
 def calc_gpmp(gpm):
     if gpm < 500:
@@ -107,6 +119,13 @@ for match, player in extraction_data['matches'].items():
         #last hit
         lh = int(stat['lh'])
         lhp = calc_lhp(lh)
+        
+        #denies
+        if stat['dn'] == "":
+            dnp = 0
+        else:
+            dn = int(stat['dn'])
+            dnp = calc_dnp(dn)
 
         #gold per minute
         gpm = int(stat['gpm'])
@@ -144,7 +163,7 @@ for match, player in extraction_data['matches'].items():
         lvl = int(stat['max_lvl'])
         lvlp = calc_lvlp(lvl)
         
-        Total_Points = kp + dp + ap + lhp + gpmp + healp + bld + lvlp \
+        Total_Points = kp + dp + ap + lhp + gpmp + healp + bld + lvlp + dnp \
                        #+ dmg + xpm
 
         print("For Match id " + match + " player id is " + stat['player_id'] + " and Total Points = " + str(Total_Points))
