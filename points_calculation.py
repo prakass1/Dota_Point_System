@@ -82,6 +82,13 @@ def calc_healp(heal):
         healp = 10
     return healp
 
+#calculate level points if lvl = 30
+def calc_lvlp(lvl):
+    if lvl == 30:
+        lvlp = 10
+    else:
+        lvlp = 0
+    return lvlp
 
 for match, player in extraction_data['matches'].items():
     for stat in player:
@@ -133,7 +140,11 @@ for match, player in extraction_data['matches'].items():
             heal = int(stat['heal'])
             healp = calc_healp(heal)
         
-        Total_Points = kp + dp + ap + lhp + gpmp + healp + bld \
+        #level points if max level of 30 reached
+        lvl = int(stat['max_lvl'])
+        lvlp = calc_lvlp(lvl)
+        
+        Total_Points = kp + dp + ap + lhp + gpmp + healp + bld + lvlp \
                        #+ dmg + xpm
 
         print("player id is " + stat['player_id'] + " and Total Points =" + str(Total_Points))
