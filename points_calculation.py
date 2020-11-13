@@ -60,6 +60,30 @@ def calc_gpmp(gpm):
         gpmp = 10
     return gpmp
 
+#calculate xp per minute points
+def calc_xpmp(xpm):
+    if xpm < 500:
+        xpmp = 2
+    elif 500 < xpm < 1000:
+        xpmp = 3
+    elif 1000 < xpm < 1500:
+        xpmp = 5
+    elif 1500 < xpm < 2000:
+        xpmp = 7
+    elif 2000 < xpm:
+        xpmp = 10
+    else:
+        xpmp = 10
+    return xpmp
+
+#calculate damage points
+def calc_dmgp(dmg):
+    if dmg > 100000:
+        dmgp = 10
+    else:
+        dmgp = 0
+    return dmgp
+
 #calculate building damage points
 def calc_bldp(bld):
     if bld < 2000:
@@ -101,7 +125,6 @@ def calc_lvlp(lvl):
     else:
         lvlp = 0
     return lvlp
-
 for match, player in extraction_data['matches'].items():
     for stat in player:
         #kill
@@ -131,26 +154,29 @@ for match, player in extraction_data['matches'].items():
         gpm = int(stat['gpm'])
         gpmp = calc_gpmp(gpm)
 
-        #building damage (values are with string 'k', so hast to be updated)
+        #building damage
         if "k" in stat["bld"]:
             bld = float(stat["bld"].split("k")[0]) * 1000
-            bld = calc_bldp(bld)
+            bldp = calc_bldp(bld)
         else:
             bld = float(stat["bld"])
-            bld = calc_bldp(bld)
+            bldp = calc_bldp(bld)
 
-        #XPM (values are with string 'k', so hast to be updated)
+        #xp per minute
         if "k" in stat["xpm"]:
             xpm = float(stat["xpm"].split("k")[0]) * 1000
+            xpmp = calc_xpmp(xpm)
         else:
             xpm = float(stat["xpm"])
+            xpmp = calc_xpmp(xpm)
 
-        #DMG (values are with string 'k', so hast to be updated)
+        #damage > 100k gets bonus
         if "k" in stat["dmg"]:
             dmg = float(stat["dmg"].split("k")[0]) * 1000
+            dmgp = calc_dmgp(dmg)
         else:
             dmg = float(stat["dmg"])
-
+            dmgp = calc_dmgp(dmg)
 
         #heal points (some values in heal are '-')
         if stat['heal'] == "-":
@@ -163,8 +189,7 @@ for match, player in extraction_data['matches'].items():
         lvl = int(stat['max_lvl'])
         lvlp = calc_lvlp(lvl)
         
-        Total_Points = kp + dp + ap + lhp + gpmp + healp + bld + lvlp + dnp \
-                       #+ dmg + xpm
+        Total_Points = kp + dp + ap + lhp + gpmp + healp + bldp + lvlp + dnp + xpmp + dmgp
 
         print("For Match id " + match + " player id is " + stat['player_id'] + " and Total Points = " + str(Total_Points))
         
