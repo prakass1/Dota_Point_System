@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import traceback
 import properties
 import time
+import utility
 base_url = "https://www.dotabuff.com/"
 extraction_data = {}
 matches_list = []
@@ -17,6 +18,31 @@ def extract_match_data(match_id):
     except ConnectionError:
         print("There are been connection error")
         print(traceback.print_exc())
+
+
+def extract_player_infos(player_id):
+    try:
+        header = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36"}
+        html_content = requests.get("".join(base_url + "/players/" + player_id), headers=header)
+        return html_content
+    except ConnectionError:
+        print("There are been connection error")
+        print(traceback.print_exc())
+
+def player_info():
+    players_dict = {}
+    for player in properties.player_ids:
+        temp_player = {}
+        temp_player_data = extract_player_infos(player)
+        html_soup = BeautifulSoup(temp_player_data.content, "html.parser")
+        player_name = html_soup.find("img", {"class":"image-player"}).get("alt")
+        player_image = html_soup.find("img", {"class":"image-player"}).get("src")
+        temp_player["name"] = player_name
+        temp_player["image_url"] = player_image
+        players_dict[player] = temp_player
+        time.sleep(20)
+    return players_dict
 
 
 def main_process():
@@ -71,6 +97,14 @@ def main_process():
     extraction_data["matches"] = match_dict
     return extraction_data
 
+
 # Main execution
-#if __name__ == "__main__":
-#    print(main_process())
+if __name__ == "__main__":
+    #print(main_process())
+    #Extract player data
+    player_infos = player_info()
+    # Save it as pickle
+    utility.save_data("player_data", player_infos)
+
+#For loading the player infos
+#utility.load_data("player_data")
