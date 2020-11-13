@@ -125,6 +125,70 @@ def calc_lvlp(lvl):
     else:
         lvlp = 0
     return lvlp
+
+#calculate item points
+def calc_itemp(item):
+    itemp = 0
+    for each in item:
+        if each == 'magic-wand':
+            itemp += 5
+        elif each == 'tranquil-boots':
+            itemp += 10
+        elif each == 'arcane-boots':
+            itemp += 15
+        elif each == 'aether-lens':
+            itemp += 10
+        elif each == 'force-staff':
+            itemp += 15
+        elif each == 'glimmer-cape':
+            itemp += 15
+        elif each == 'smoke-of-deceit':
+            itemp += 5
+        elif each == 'sentry-ward':
+            itemp += 10
+        elif each == 'ghost-scepter':
+            itemp += 10
+        elif each == 'observer-ward':
+            itemp += 10
+        elif each == 'assault-cuirass':
+            itemp += 15
+        elif each == 'spirit-vessel':
+            itemp += 15
+        elif each == 'heavens-halberd':
+            itemp += 10
+        elif each == 'lotus-orb':
+            itemp += 20
+        elif each == 'urn-of-shadows':
+            itemp += 10
+        elif each == 'aeon-disk':
+            itemp += 15
+        elif each == 'vladimirs-offering':
+            itemp += 15
+        elif each == 'hood-of-defiance':
+            itemp += 10
+        elif each == 'mekansm':
+            itemp += 15
+        elif each == 'gem-of-true-sight':
+            itemp += 15
+        elif each == 'solar-crest':
+            itemp += 15
+        elif each == 'medallion-of-courage':
+            itemp += 10
+        elif each == 'observer-and-sentry-wards':
+            itemp += 15
+        elif each == 'dust-of-appearance':
+            itemp += 10
+        elif each == 'guardian-greaves':
+            itemp += 20
+        elif each == 'crimson-guard':
+            itemp += 20
+        elif each == 'pipe-of-insight':
+            itemp += 20
+        else:
+            itemp += 0
+    return itemp
+
+#total points
 for match, player in extraction_data['matches'].items():
     for stat in player:
         #kill
@@ -189,7 +253,11 @@ for match, player in extraction_data['matches'].items():
         lvl = int(stat['max_lvl'])
         lvlp = calc_lvlp(lvl)
         
-        Total_Points = kp + dp + ap + lhp + gpmp + healp + bldp + lvlp + dnp + xpmp + dmgp
+        #item points (support items inflated)
+        player_item = stat['items']
+        itemp = calc_itemp(player_item)
+        
+        Total_Points = kp + dp + ap + lhp + gpmp + healp + bldp + lvlp + dnp + xpmp + dmgp + itemp
 
         print("For Match id " + match + " player id is " + stat['player_id'] + " and Total Points = " + str(Total_Points))
         
