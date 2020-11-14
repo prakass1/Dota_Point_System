@@ -49,6 +49,7 @@ def main_process():
     match_dict = {}
     for match in properties.match_ids:
         players_list = []
+        match_counter = 0
         match_data = extract_match_data(match)
         html_soup = BeautifulSoup(match_data.content, "html.parser")
         for player_id in properties.player_ids:
@@ -56,6 +57,7 @@ def main_process():
             temp_player_dict["player_id"] = player_id
             player_data = html_soup.find("tr", {"class": "player-" + player_id})
             if player_data:
+                match_counter += 1
                 level = player_data.find("span", {"class":"overlay-text"}).get_text()
                 temp_player_dict["max_lvl"] = level
                 # Find the played hero
@@ -90,13 +92,18 @@ def main_process():
                 temp_player_dict["items"] = player_items
                 players_list.append(temp_player_dict)
             else:
-                print("Not a known player")
-        match_dict[match] = players_list
+                print("Not a known player for the match...")
+
+        if match_counter >= 3:
+            print(" {} People in party ".format(str(match_counter)))
+            match_dict[match] = players_list
         # Not to get banned
         time.sleep(10)
     extraction_data["matches"] = match_dict
     return extraction_data
 
+
+#print(main_process())
 
 # Main execution
 if __name__ == "__main__":

@@ -12,5 +12,9 @@ def load_data(f_name):
         obj = pickle.load(f_op)
         return obj
 
+def write_html_data(f_name, content):
+    with open(f_name + ".pickle", 'wb') as f_op:
+        pickle.dump(obj, f_op, protocol=pickle.HIGHEST_PROTOCOL)
+    print("Saved the data")
 
 

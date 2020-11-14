@@ -1,7 +1,8 @@
 import buff_extraction
 import pickle
-# Get the data from dotabuff first
-extraction_data = buff_extraction.main_process()
+import utility
+from jinja2 import Environment, FileSystemLoader
+import traceback
 
 #points distribution per player per match
 #calculate kill points
@@ -188,87 +189,119 @@ def calc_itemp(item):
             itemp += 0
     return itemp
 
-#total points
-for match, player in extraction_data['matches'].items():
-    for stat in player:
-        #kill
-        k = int(stat['kills'])
-        kp = calc_killp(k)
 
-        #death
-        d = int(stat['deaths'])
-        dp = calc_deathsp(d)
+def calculate_points(extraction_data):
+    # total points
+    total_points_data = {}
+    for match, player in extraction_data['matches'].items():
+        for stat in player:
+            #kill
+            k = int(stat['kills'])
+            kp = calc_killp(k)
 
-        #assist
-        a = int(stat['assist'])
-        ap = calc_assistp(a)
+            #death
+            d = int(stat['deaths'])
+            dp = calc_deathsp(d)
 
-        #last hit
-        lh = int(stat['lh'])
-        lhp = calc_lhp(lh)
-        
-        #denies
-        if stat['dn'] == "":
-            dnp = 0
-        else:
-            dn = int(stat['dn'])
-            dnp = calc_dnp(dn)
+            #assist
+            a = int(stat['assist'])
+            ap = calc_assistp(a)
 
-        #gold per minute
-        gpm = int(stat['gpm'])
-        gpmp = calc_gpmp(gpm)
+            #last hit
+            lh = int(stat['lh'])
+            lhp = calc_lhp(lh)
 
-        #building damage
-        if "k" in stat["bld"]:
-            bld = float(stat["bld"].split("k")[0]) * 1000
-            bldp = calc_bldp(bld)
-        else:
-            bld = float(stat["bld"])
-            bldp = calc_bldp(bld)
+            #denies
+            if stat['dn'] == "":
+                dnp = 0
+            else:
+                dn = int(stat['dn'])
+                dnp = calc_dnp(dn)
 
-        #xp per minute
-        if "k" in stat["xpm"]:
-            xpm = float(stat["xpm"].split("k")[0]) * 1000
-            xpmp = calc_xpmp(xpm)
-        else:
-            xpm = float(stat["xpm"])
-            xpmp = calc_xpmp(xpm)
+            #gold per minute
+            gpm = int(stat['gpm'])
+            gpmp = calc_gpmp(gpm)
 
-        #damage > 100k gets bonus
-        if "k" in stat["dmg"]:
-            dmg = float(stat["dmg"].split("k")[0]) * 1000
-            dmgp = calc_dmgp(dmg)
-        else:
-            dmg = float(stat["dmg"])
-            dmgp = calc_dmgp(dmg)
+            #building damage
+            if "k" in stat["bld"]:
+                bld = float(stat["bld"].split("k")[0]) * 1000
+                bldp = calc_bldp(bld)
+            else:
+                bld = float(stat["bld"])
+                bldp = calc_bldp(bld)
 
-        #heal points (some values in heal are '-')
-        if stat['heal'] == "-":
-            healp = 0
-        else:
-            heal = int(stat['heal'])
-            healp = calc_healp(heal)
-        
-        #level points if max level of 30 reached
-        lvl = int(stat['max_lvl'])
-        lvlp = calc_lvlp(lvl)
-        
-        #item points (support items inflated)
-        player_item = stat['items']
-        itemp = calc_itemp(player_item)
-        
-        Total_Points = kp + dp + ap + lhp + gpmp + healp + bldp + lvlp + dnp + xpmp + dmgp + itemp
+            #xp per minute
+            if "k" in stat["xpm"]:
+                xpm = float(stat["xpm"].split("k")[0]) * 1000
+                xpmp = calc_xpmp(xpm)
+            else:
+                xpm = float(stat["xpm"])
+                xpmp = calc_xpmp(xpm)
 
-        print("For Match id " + match + " player id is " + stat['player_id'] + " and Total Points = " + str(Total_Points))
-        
-# # To add is a final data store as follows:
-# total_points = {
-#     "p1": {
-#         "score": val,
-#         "games_played": val
-#     },
-#     "p2": {
-#         "score": val,
-#         "games_played": val
-#     }
-# }
+            #damage > 100k gets bonus
+            if "k" in stat["dmg"]:
+                dmg = float(stat["dmg"].split("k")[0]) * 1000
+                dmgp = calc_dmgp(dmg)
+            else:
+                dmg = float(stat["dmg"])
+                dmgp = calc_dmgp(dmg)
+
+            #heal points (some values in heal are '-')
+            if stat['heal'] == "-":
+                healp = 0
+            elif "k" in stat["heal"]:
+                heal = float(stat["heal"].split("k")[0]) * 1000
+                healp = calc_healp(heal)
+            else:
+                heal = int(stat['heal'])
+
+            #level points if max level of 30 reached
+            lvl = int(stat['max_lvl'])
+            lvlp = calc_lvlp(lvl)
+
+            #item points (support items inflated)
+            player_item = stat['items']
+            itemp = calc_itemp(player_item)
+
+            total_points = kp + dp + ap + lhp + gpmp + healp + bldp + lvlp + dnp + xpmp + dmgp + itemp
+
+            temp_data_store = {"player_id": stat["player_id"],
+                               "score": total_points,
+                               "games_played": 1}
+
+            # Load the player info into the temp_data_store
+            player_data = utility.load_data("player_data")
+            if player_data:
+                if stat["player_id"] in player_data:
+                    temp_data_store["player_name"] = player_data[stat["player_id"]]["name"]
+                    temp_data_store["img_url"] = player_data[stat["player_id"]]["image_url"]
+            else:
+                temp_data_store["player_name"] = player_data[stat["player_id"]]
+                temp_data_store["img_url"] = ""
+
+            if stat["player_id"] not in total_points_data:
+                total_points_data[stat["player_id"]] = temp_data_store
+            else:
+                temp_data_store = total_points_data[stat["player_id"]]
+                temp_data_store["score"] = temp_data_store["score"] + total_points
+                temp_data_store["games_played"] += 1
+                total_points_data[stat["player_id"]] = temp_data_store
+
+            #print("For Match id " + match + " player id is " + stat['player_id'] + " and Total Points = " + str(Total_Points))
+
+    return total_points_data
+
+
+def write_template(total_points):
+    try:
+        file_loader = FileSystemLoader("templates")
+        env = Environment(loader=file_loader)
+        template = env.get_template("table.html")
+        output = template.render(ranked_list=total_points)
+        f_op = open("html/rankings.html", "w", encoding="utf-8")
+        f_op.write(output)
+        f_op.close()
+    except IOError:
+        print("Error while writing")
+        traceback.print_exc()
+        f_op.close()
