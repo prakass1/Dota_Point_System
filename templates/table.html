@@ -21,19 +21,19 @@
         </tr>
         </thead>
         <tbody>
-        {% for player_id, infos in ranked_list.items() %}
+        {% for item in ranked_list %}
         <tr>
-            <td> {{infos.player_id}}</td>
+            <td> {{item.player_id}}</td>
             <td>
-                <img src={{ infos.img_url }} width="10" height="10">
+                <img src={{ item.img_url }} width="30" height="30">
                 &nbsp;&nbsp;&nbsp;
-                {{ infos.player_name }}
+                {{ item.player_name }}
             </td>
             <td>
-                {{ infos.score }}
+                {{ item.score }}
             </td>
             <td>
-                {{ infos.games_played }}
+                {{ item.games_played }}
             </td>
         </tr>
         {% endfor %}

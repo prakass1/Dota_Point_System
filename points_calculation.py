@@ -289,7 +289,17 @@ def calculate_points(extraction_data):
 
             #print("For Match id " + match + " player id is " + stat['player_id'] + " and Total Points = " + str(Total_Points))
 
-    return total_points_data
+
+    # Sort in descending order of points and add each of the player into the ranked list.
+    player_scores = [infos["score"] for infos in total_points_data.values()]
+    player_scores.sort(reverse=True)
+    ranked_list = []
+    for score in player_scores:
+        for k, v in total_points_data.items():
+            if score == v["score"]:
+                ranked_list.append(v)
+
+    return ranked_list
 
 
 def write_template(total_points):
