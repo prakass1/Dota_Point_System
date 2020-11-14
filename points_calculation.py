@@ -308,7 +308,7 @@ def write_template(total_points):
         env = Environment(loader=file_loader)
         template = env.get_template("table.html")
         output = template.render(ranked_list=total_points)
-        f_op = open("html/rankings.html", "w", encoding="utf-8")
+        f_op = open("docs/rankings.html", "w", encoding="utf-8")
         f_op.write(output)
         f_op.close()
     except IOError:
