@@ -196,20 +196,33 @@ def calculate_points(extraction_data):
     for match, player in extraction_data['matches'].items():
         for stat in player:
             #kill
-            k = int(stat['kills'])
-            kp = calc_killp(k)
+            if stat['kills'] == "-":
+                kp = 0
+            else:
+                k = int(stat['kills'])
+                kp = calc_killp(k)
 
             #death
-            d = int(stat['deaths'])
-            dp = calc_deathsp(d)
+            if stat['deaths'] == "-":
+                dp = 0
+            else:
+                d = int(stat['deaths'])
+                dp = calc_deathsp(d)
 
             #assist
-            a = int(stat['assist'])
-            ap = calc_assistp(a)
+            if stat['assist'] == "-":
+                ap = 0
+            else:
+                a = int(stat['assist'])
+                ap = calc_assistp(a)
 
             #last hit
-            lh = int(stat['lh'])
-            lhp = calc_lhp(lh)
+            #assist
+            if stat['lh'] == "-":
+                lhp = 0
+            else:
+                lh = int(stat['lh'])
+                lhp = calc_lhp(lh)
 
             #denies
             if stat['dn'] == "":
@@ -219,13 +232,18 @@ def calculate_points(extraction_data):
                 dnp = calc_dnp(dn)
 
             #gold per minute
-            gpm = int(stat['gpm'])
-            gpmp = calc_gpmp(gpm)
+            if stat["gpm"] == "-":
+                gpmp = 0
+            else:
+                gpm = int(stat['gpm'])
+                gpmp = calc_gpmp(gpm)
 
             #building damage
             if "k" in stat["bld"]:
                 bld = float(stat["bld"].split("k")[0]) * 1000
                 bldp = calc_bldp(bld)
+            elif stat["bld"] == "-":
+                bldp = 0
             else:
                 bld = float(stat["bld"])
                 bldp = calc_bldp(bld)
@@ -242,6 +260,8 @@ def calculate_points(extraction_data):
             if "k" in stat["dmg"]:
                 dmg = float(stat["dmg"].split("k")[0]) * 1000
                 dmgp = calc_dmgp(dmg)
+            elif stat["dmg"] == "-":
+                dmgp = 0
             else:
                 dmg = float(stat["dmg"])
                 dmgp = calc_dmgp(dmg)
