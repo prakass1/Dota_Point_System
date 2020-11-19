@@ -9,6 +9,7 @@
             <th scope="col">Player Name</th>
             <th scope="col">Points</th>
             <th scope="col">Games Played</th>
+            <th scope="col">Player Rating</th>
         </tr>
         </thead>
         <tbody>
@@ -25,6 +26,9 @@
             </td>
             <td>
                 {{ item.games_played }}
+            </td>
+            <td>
+                {{ item.player_rating }}
             </td>
         </tr>
         {% endfor %}
