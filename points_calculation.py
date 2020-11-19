@@ -197,96 +197,100 @@ def calculate_points(extraction_data):
         for stat in player:
             #kill
             if stat['kills'] == "-":
-                kp = 0
+                Kill_Points = 0
             else:
                 k = int(stat['kills'])
-                kp = calc_killp(k)
+                Kill_Points = calc_killp(k)
 
             #death
             if stat['deaths'] == "-":
-                dp = 0
+                Death_Points = 0
             else:
                 d = int(stat['deaths'])
-                dp = calc_deathsp(d)
+                Death_Points = calc_deathsp(d)
 
             #assist
             if stat['assist'] == "-":
-                ap = 0
+                Assist_Points = 0
             else:
                 a = int(stat['assist'])
-                ap = calc_assistp(a)
+                Assist_Points = calc_assistp(a)
 
             #last hit
             #assist
             if stat['lh'] == "-":
-                lhp = 0
+                Last_Hit_Points = 0
             else:
                 lh = int(stat['lh'])
-                lhp = calc_lhp(lh)
+                Last_Hit_Points = calc_lhp(lh)
 
             #denies
             if stat['dn'] == "":
-                dnp = 0
+                Deny_Points = 0
             else:
                 dn = int(stat['dn'])
-                dnp = calc_dnp(dn)
+                Deny_Points = calc_dnp(dn)
 
             #gold per minute
             if stat["gpm"] == "-":
-                gpmp = 0
+                Gold_Per_Minute_Points = 0
             else:
                 gpm = int(stat['gpm'])
-                gpmp = calc_gpmp(gpm)
+                Gold_Per_Minute_Points = calc_gpmp(gpm)
 
             #building damage
             if "k" in stat["bld"]:
                 bld = float(stat["bld"].split("k")[0]) * 1000
-                bldp = calc_bldp(bld)
+                Building_Damage_Points = calc_bldp(bld)
             elif stat["bld"] == "-":
-                bldp = 0
+                Building_Damage_Points = 0
             else:
                 bld = float(stat["bld"])
-                bldp = calc_bldp(bld)
+                Building_Damage_Points = calc_bldp(bld)
 
             #xp per minute
             if "k" in stat["xpm"]:
                 xpm = float(stat["xpm"].split("k")[0]) * 1000
-                xpmp = calc_xpmp(xpm)
+                Experience_Per_Minute_Points = calc_xpmp(xpm)
             else:
                 xpm = float(stat["xpm"])
-                xpmp = calc_xpmp(xpm)
+                Experience_Per_Minute_Points = calc_xpmp(xpm)
 
             #damage > 100k gets bonus
             if "k" in stat["dmg"]:
                 dmg = float(stat["dmg"].split("k")[0]) * 1000
-                dmgp = calc_dmgp(dmg)
+                Damage_Points = calc_dmgp(dmg)
             elif stat["dmg"] == "-":
-                dmgp = 0
+                Damage_Points = 0
             else:
                 dmg = float(stat["dmg"])
-                dmgp = calc_dmgp(dmg)
+                Damage_Points = calc_dmgp(dmg)
 
             #heal points (some values in heal are '-')
             if stat['heal'] == "-":
-                healp = 0
+                Heal_Points = 0
             elif "k" in stat["heal"]:
                 heal = float(stat["heal"].split("k")[0]) * 1000
-                healp = calc_healp(heal)
+                Heal_Points = calc_healp(heal)
             else:
-                heal = int(stat['heal'])
+                Heal_Points = int(stat['heal'])
+                Heal_Points = calc_healp(heal)
 
             #level points if max level of 30 reached
             lvl = int(stat['max_lvl'])
-            lvlp = calc_lvlp(lvl)
+            Max_Level_Points = calc_lvlp(lvl)
 
             #item points (support items inflated)
             player_item = stat['items']
-            itemp = calc_itemp(player_item)
+            Item_Points = calc_itemp(player_item)
 
-            total_points = kp + dp + ap + lhp + gpmp + healp + bldp + lvlp + dnp + xpmp + dmgp + itemp
+            total_Points = Kill_Points + Death_Points + Assist_Points + Last_Hit_Points + Deny_Points \
+                        + Gold_Per_Minute_Points + Experience_Per_Minute_Points \
+                        + Damage_Points + Building_Damage_Points \
+                        + Heal_Points + Max_Level_Points + Item_Points
 
             temp_data_store = {"player_id": stat["player_id"],
-                               "score": total_points,
+                               "score": total_Points,
                                "games_played": 1}
 
             # Load the player info into the temp_data_store
@@ -308,7 +312,6 @@ def calculate_points(extraction_data):
                 total_points_data[stat["player_id"]] = temp_data_store
 
             #print("For Match id " + match + " player id is " + stat['player_id'] + " and Total Points = " + str(Total_Points))
-
 
     # Sort in descending order of points and add each of the player into the ranked list.
     player_scores = [infos["score"] for infos in total_points_data.values()]
