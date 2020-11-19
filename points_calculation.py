@@ -291,7 +291,8 @@ def calculate_points(extraction_data):
 
             temp_data_store = {"player_id": stat["player_id"],
                                "score": total_Points,
-                               "games_played": 1}
+                               "games_played": 1,
+                               "player_rating": 0}
 
             # Load the player info into the temp_data_store
             player_data = utility.load_data("player_data")
@@ -309,6 +310,7 @@ def calculate_points(extraction_data):
                 temp_data_store = total_points_data[stat["player_id"]]
                 temp_data_store["score"] = temp_data_store["score"] + total_points
                 temp_data_store["games_played"] += 1
+                temp_data_store["player_rating"] = temp_data_store["score"] / temp_data_store["games_played"]
                 total_points_data[stat["player_id"]] = temp_data_store
 
             #print("For Match id " + match + " player id is " + stat['player_id'] + " and Total Points = " + str(Total_Points))
